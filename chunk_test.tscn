@@ -1,0 +1,207 @@
+[gd_scene load_steps=21 format=3 uid="uid://blgobc63t3raw"]
+
+[ext_resource type="Script" uid="uid://vyqvfyu57f61" path="res://chunk_test.gd" id="1_alf0d"]
+[ext_resource type="Texture2D" uid="uid://bcy6ymgdepv1l" path="res://starmap_2020_4k.jpg" id="2_hxllu"]
+[ext_resource type="Script" uid="uid://da126el82l0sa" path="res://test_player.gd" id="2_swfu5"]
+
+[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_csu5g"]
+panorama = ExtResource("2_hxllu")
+
+[sub_resource type="Sky" id="Sky_swfu5"]
+sky_material = SubResource("PanoramaSkyMaterial_csu5g")
+
+[sub_resource type="Environment" id="Environment_hxllu"]
+background_mode = 2
+sky = SubResource("Sky_swfu5")
+tonemap_mode = 2
+glow_enabled = true
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_hxllu"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_da87l"]
+transparency = 1
+no_depth_test = true
+albedo_color = Color(0.439216, 0.909804, 0, 0.784314)
+
+[sub_resource type="SphereMesh" id="SphereMesh_swfu5"]
+material = SubResource("StandardMaterial3D_da87l")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ttemh"]
+transparency = 1
+albedo_color = Color(0, 1, 1, 0.784314)
+
+[sub_resource type="SphereMesh" id="SphereMesh_hxllu"]
+material = SubResource("StandardMaterial3D_ttemh")
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_swfu5"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_swfu5"]
+transparency = 1
+blend_mode = 2
+albedo_color = Color(1, 1, 1, 0.0392157)
+
+[sub_resource type="BoxMesh" id="BoxMesh_alf0d"]
+material = SubResource("StandardMaterial3D_swfu5")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hxllu"]
+transparency = 1
+albedo_color = Color(1, 0, 0, 0.0980392)
+
+[sub_resource type="BoxMesh" id="BoxMesh_swfu5"]
+material = SubResource("StandardMaterial3D_hxllu")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_csu5g"]
+transparency = 1
+albedo_color = Color(0, 1, 0, 0.0980392)
+
+[sub_resource type="BoxMesh" id="BoxMesh_hxllu"]
+material = SubResource("StandardMaterial3D_csu5g")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ckhj7"]
+transparency = 1
+albedo_color = Color(0, 0.392157, 1, 0.0980392)
+
+[sub_resource type="BoxMesh" id="BoxMesh_csu5g"]
+material = SubResource("StandardMaterial3D_ckhj7")
+
+[node name="ChunkDemo" type="Node3D"]
+script = ExtResource("1_alf0d")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_hxllu")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.5, 0.866025, 0, -0.866025, 0.5, 0, 0, 0)
+layers = 3
+shadow_enabled = true
+
+[node name="FG" type="SubViewportContainer" parent="."]
+offset_right = 1600.0
+offset_bottom = 900.0
+
+[node name="Viewport" type="SubViewport" parent="FG"]
+transparent_bg = true
+handle_input_locally = false
+size = Vector2i(1600, 900)
+render_target_update_mode = 4
+
+[node name="FarPlayer" type="RigidBody3D" parent="FG/Viewport"]
+
+[node name="Collider" type="CollisionShape3D" parent="FG/Viewport/FarPlayer"]
+shape = SubResource("SphereShape3D_hxllu")
+
+[node name="Mesh" type="MeshInstance3D" parent="FG/Viewport/FarPlayer"]
+layers = 2
+mesh = SubResource("SphereMesh_swfu5")
+
+[node name="CamRotate" type="Node3D" parent="FG/Viewport/FarPlayer"]
+
+[node name="CamPitch" type="Node3D" parent="FG/Viewport/FarPlayer/CamRotate"]
+
+[node name="Cam" type="Camera3D" parent="FG/Viewport/FarPlayer/CamRotate/CamPitch"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, 2)
+cull_mask = 1048574
+
+[node name="BG" type="Node3D" parent="."]
+
+[node name="TestPlayer" type="RigidBody3D" parent="BG"]
+script = ExtResource("2_swfu5")
+
+[node name="Mesh" type="MeshInstance3D" parent="BG/TestPlayer"]
+mesh = SubResource("SphereMesh_hxllu")
+
+[node name="CamRotate" type="Node3D" parent="BG/TestPlayer"]
+
+[node name="CamPitch" type="Node3D" parent="BG/TestPlayer/CamRotate"]
+
+[node name="Cam" type="Camera3D" parent="BG/TestPlayer/CamRotate/CamPitch"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 2)
+cull_mask = 1048573
+
+[node name="Collider" type="CollisionShape3D" parent="BG/TestPlayer"]
+shape = SubResource("SphereShape3D_swfu5")
+disabled = true
+
+[node name="LocalCube" type="MeshInstance3D" parent="BG"]
+mesh = SubResource("BoxMesh_alf0d")
+skeleton = NodePath("../..")
+
+[node name="PlanetCube" type="MeshInstance3D" parent="BG"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+mesh = SubResource("BoxMesh_swfu5")
+skeleton = NodePath("../LocalCube")
+
+[node name="StellarCube" type="MeshInstance3D" parent="BG"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2, 0)
+mesh = SubResource("BoxMesh_hxllu")
+skeleton = NodePath("../GalacticCube")
+
+[node name="GalacticCube" type="MeshInstance3D" parent="BG"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -3, 0)
+mesh = SubResource("BoxMesh_csu5g")
+skeleton = NodePath("../PlanetCube")
+
+[node name="UI" type="CanvasLayer" parent="BG"]
+
+[node name="Debug" type="Control" parent="BG/UI"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 1600.0
+offset_bottom = 900.0
+
+[node name="DebugText" type="RichTextLabel" parent="BG/UI/Debug"]
+layout_mode = 0
+offset_right = 1600.0
+offset_bottom = 900.0
+
+[node name="RichTextLabel" type="RichTextLabel" parent="BG/UI/Debug"]
+layout_mode = 0
+offset_left = 320.0
+offset_top = 232.0
+offset_right = 650.0
+offset_bottom = 305.0
+theme_override_font_sizes/normal_font_size = 32
+text = "CHUNKED POSITION"
+
+[node name="RichTextLabel2" type="RichTextLabel" parent="BG/UI/Debug"]
+layout_mode = 0
+offset_left = 970.0
+offset_top = 232.0
+offset_right = 1300.0
+offset_bottom = 280.0
+theme_override_font_sizes/normal_font_size = 32
+text = "GLOBAL POSITION"
+
+[node name="Instructions" type="RichTextLabel" parent="BG/UI/Debug"]
+layout_mode = 0
+offset_left = 13.0
+offset_top = 654.0
+offset_right = 704.0
+offset_bottom = 928.0
+theme_override_font_sizes/normal_font_size = 24
+text = "INSTRUCTIONS
+Esc key: Toggle mouse
+WASD keys: Horizontal movement
+Space/Shift keys: Up/Down movement
+E key (hold): Slow down
+U/J keys: Teleport 100   km forward/back 
+I/K keys: Teleport 1000 km forward/back"
+
+[node name="Line2D_X" type="Line2D" parent="BG/UI"]
+position = Vector2(-3.505, 0)
+rotation = 4.71239
+scale = Vector2(1.005, 1.005)
+default_color = Color(1, 0, 0, 0.588235)
+
+[node name="Line2D_Z" type="Line2D" parent="BG/UI"]
+position = Vector2(-3.505, 0)
+rotation = 4.71239
+scale = Vector2(1.005, 1.005)
+default_color = Color(0, 0, 1, 0.588235)
+
+[node name="Line2D_Y" type="Line2D" parent="BG/UI"]
+position = Vector2(-3.505, 0)
+rotation = -1.5708
+scale = Vector2(1.005, 1.005)
+points = PackedVector2Array(0, 0)
+default_color = Color(1, 1, 0, 0.588235)
